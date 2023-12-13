@@ -8,7 +8,6 @@ from collections import Counter
 
 
 def generate_rsa_keys() -> (bytes, bytes):
-    # Генерація ключів
     key = RSA.generate(1024)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
@@ -17,16 +16,13 @@ def generate_rsa_keys() -> (bytes, bytes):
 
 
 def generate_aes_key() -> (bytes, bytes):
-    return secrets.token_bytes(16)  # 128 bits for AES-128
+    return secrets.token_bytes(16)
 
 
 def encrypt_message(message, public_key) -> bytes:
-    # Generate a random AES key
     aes_key = generate_aes_key()
-    # Encrypt the AES key with RSA
     cipher_rsa = PKCS1_OAEP.new(RSA.import_key(public_key))
     encrypted_aes_key = cipher_rsa.encrypt(aes_key)
-    # Encrypt the message with AES
     cipher_aes = AES.new(aes_key, AES.MODE_EAX)
     ciphertext, tag = cipher_aes.encrypt_and_digest(message)
 
@@ -34,15 +30,12 @@ def encrypt_message(message, public_key) -> bytes:
 
 
 def decrypt_message(encrypted_message, private_key) -> bytes:
-    # Extract the components
     encrypted_aes_key = encrypted_message[:128]
     nonce = encrypted_message[128:144]
     tag = encrypted_message[144:160]
     ciphertext = encrypted_message[160:]
-    # Decrypt the AES key with RSA
     cipher_rsa = PKCS1_OAEP.new(RSA.import_key(private_key))
     aes_key = cipher_rsa.decrypt(encrypted_aes_key)
-    # Decrypt the message with AES
     cipher_aes = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
     decrypted_message = cipher_aes.decrypt_and_verify(ciphertext, tag)
 
@@ -56,17 +49,12 @@ def generate_elgamal_keys() -> (bytes, bytes):
     return private_key, public_key
 
 
-def determine_winner(votes) -> str | list:
-    # Використовуємо Counter для підрахунку кількості голосів за кожного кандидата
+def count_votes(votes) -> str | list:
     vote_counts = Counter(votes)
-    # Знаходимо максимальну кількість голосів
     max_votes = max(vote_counts.values())
-    # Знаходимо кандидатів, які отримали максимальну кількість голосів
     winners = [candidate for candidate, count in vote_counts.items() if count == max_votes]
 
     if len(winners) == 1:
-        # Якщо є тільки один переможець, повертаємо його номер
         return winners[0]
     else:
-        # Якщо є більше одного переможця, повертаємо список їх номерів
         return winners
