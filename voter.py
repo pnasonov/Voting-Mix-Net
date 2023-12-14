@@ -8,11 +8,14 @@ class Voter:
                  private_key,
                  public_key,
                  private_elgamal,
-                 public_elgamal, ) -> None:
+                 public_elgamal,
+                 can_vote) -> None:
         self.private_key = private_key
         self.public_key = public_key
         self.private_elgamal = private_elgamal
         self.public_elgamal = public_elgamal
+
+        self.can_vote = can_vote
 
         self.choice = None
         self.random_lines = []

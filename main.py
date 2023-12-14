@@ -12,27 +12,37 @@ from crypto_utils import (
 
 
 def voting() -> None:
-    # Створення виборців і присвоєння їм RSA та Elgamal ключів
-    voter_a = Voter(*generate_rsa_keys(), *generate_elgamal_keys())
-    voter_b = Voter(*generate_rsa_keys(), *generate_elgamal_keys())
-    voter_c = Voter(*generate_rsa_keys(), *generate_elgamal_keys())
-    voter_d = Voter(*generate_rsa_keys(), *generate_elgamal_keys())
+    # Створення виборців і присвоєння їм RSA, Elgamal ключів, чи може голосувати
+    voter_a = Voter(*generate_rsa_keys(), *generate_elgamal_keys(), can_vote=True)
+    voter_b = Voter(*generate_rsa_keys(), *generate_elgamal_keys(), can_vote=True)
+    voter_c = Voter(*generate_rsa_keys(), *generate_elgamal_keys(), can_vote=True)
+    voter_d = Voter(*generate_rsa_keys(), *generate_elgamal_keys(), can_vote=True)
 
     voters = [voter_a, voter_b, voter_c, voter_d]
 
     # Генерація випадкових рядків для бюлетенів
     for voter in voters:
-        voter.random_lines = [
-            secrets.token_hex(16),
-            secrets.token_hex(16),
-            secrets.token_hex(16),
-            secrets.token_hex(16),
-            secrets.token_hex(16),
-        ]
+        if voter.can_vote:
+            voter.random_lines = [
+                secrets.token_hex(16),
+                secrets.token_hex(16),
+                secrets.token_hex(16),
+                secrets.token_hex(16),
+                secrets.token_hex(16),
+            ]
+        else:
+            print("Виборець не має права голосувати.")
+            return
 
     # Генерація бюлетенів з випадковими рядками
     for voter in voters:
-        voter.choice = str(random.randint(0, 1)) + voter.random_lines[0]
+        voter.choice = str(random.randint(0, 4)) + voter.random_lines[0]
+        if voter.choice[0] == "4":
+            print("Хтось з виборців проголосував неправильно!")
+            return
+        if voter.choice[0] == "0":
+            print("Хтось з виборців не проголосував!")
+            return
 
     # Шифрування відкритим ключем D виборця
     for voter in voters:
@@ -247,8 +257,8 @@ def voting() -> None:
 
     # перевірка всіх бюлетенів
     count = 0
+    # del voters[0]  # видалення бланку виборця A
     for i, voter in enumerate(voters):
-
         for j in range(4):
             if voter_d.decrypted[j].decode() == voter.choice:
                 count += 1
