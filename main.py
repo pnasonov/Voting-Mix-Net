@@ -38,11 +38,9 @@ def voting() -> None:
     for voter in voters:
         voter.choice = str(random.randint(0, 4)) + voter.random_lines[0]
         if voter.choice[0] == "4":
-            print("Хтось з виборців проголосував неправильно!")
-            return
+            raise Exception("Хтось з виборців проголосував неправильно!")
         if voter.choice[0] == "0":
-            print("Хтось з виборців не проголосував!")
-            return
+            raise Exception("Хтось з виборців не проголосував!")
 
     # Шифрування відкритим ключем D виборця
     for voter in voters:
@@ -266,8 +264,8 @@ def voting() -> None:
     if count == 4:
         print("\nБюлетні всіх виборців на місці.\n")
     else:
-        print("Кількість бюлетнів не відповідає кількості виборців")
-        return
+        raise Exception("Кількість бюлетнів не відповідає кількості виборців")
+
 
     # Підрахунок
     for i, voter in enumerate(voters):
