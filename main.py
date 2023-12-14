@@ -31,8 +31,7 @@ def voting() -> None:
                 secrets.token_hex(16),
             ]
         else:
-            print("Виборець не має права голосувати.")
-            return
+            raise Exception("Виборець не має права голосувати.")
 
     # Генерація бюлетенів з випадковими рядками
     for voter in voters:
