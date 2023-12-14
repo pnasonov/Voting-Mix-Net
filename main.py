@@ -266,7 +266,6 @@ def voting() -> None:
     else:
         raise Exception("Кількість бюлетнів не відповідає кількості виборців")
 
-
     # Підрахунок
     for i, voter in enumerate(voters):
         for j in range(4):
