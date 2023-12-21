@@ -6,6 +6,13 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec
 from collections import Counter
 
+from project.devide import (
+    get_aes,
+    get_cipher,
+    get_tag,
+    get_nonce
+)
+
 
 def generate_rsa_keys() -> (bytes, bytes):
     key = RSA.generate(1024)
@@ -48,10 +55,10 @@ def encrypt_message(message, public_key) -> bytes:
 
 
 def decrypt_message(encrypted_message, private_key) -> bytes:
-    encrypted_aes_key = encrypted_message[:128]
-    nonce = encrypted_message[128:144]
-    tag = encrypted_message[144:160]
-    ciphertext = encrypted_message[160:]
+    encrypted_aes_key = get_aes(encrypted_message)
+    nonce = get_nonce(encrypted_message)
+    tag = get_tag(encrypted_message)
+    ciphertext = get_cipher(encrypted_message)
     cipher_rsa = PKCS1_OAEP.new(RSA.import_key(private_key))
     aes_key = cipher_rsa.decrypt(encrypted_aes_key)
     cipher_aes = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
