@@ -19,6 +19,24 @@ def generate_aes_key() -> (bytes, bytes):
     return secrets.token_bytes(16)
 
 
+def generate_elgamal_keys() -> (bytes, bytes):
+    private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
+    public_key = private_key.public_key()
+
+    return private_key, public_key
+
+
+def count_votes(votes) -> str | list:
+    vote_counts = Counter(votes)
+    max_votes = max(vote_counts.values())
+    winners = [candidate for candidate, count in vote_counts.items() if count == max_votes]
+
+    if len(winners) == 1:
+        return winners[0]
+    else:
+        return winners
+
+
 def encrypt_message(message, public_key) -> bytes:
     aes_key = generate_aes_key()
     cipher_rsa = PKCS1_OAEP.new(RSA.import_key(public_key))
@@ -40,21 +58,3 @@ def decrypt_message(encrypted_message, private_key) -> bytes:
     decrypted_message = cipher_aes.decrypt_and_verify(ciphertext, tag)
 
     return decrypted_message
-
-
-def generate_elgamal_keys() -> (bytes, bytes):
-    private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
-    public_key = private_key.public_key()
-
-    return private_key, public_key
-
-
-def count_votes(votes) -> str | list:
-    vote_counts = Counter(votes)
-    max_votes = max(vote_counts.values())
-    winners = [candidate for candidate, count in vote_counts.items() if count == max_votes]
-
-    if len(winners) == 1:
-        return winners[0]
-    else:
-        return winners
