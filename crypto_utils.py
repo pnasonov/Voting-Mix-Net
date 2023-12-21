@@ -6,7 +6,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec
 from collections import Counter
 
-from project.devide import (
+from project.get_elements import (
     get_aes,
     get_cipher,
     get_tag,
